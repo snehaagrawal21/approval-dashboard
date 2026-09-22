@@ -2,7 +2,7 @@ name: Sync Approval Matrix Dashboard
 
 on:
   schedule:
-    - cron: "0 3 * * *"   # daily at 03:00 UTC — adjust as needed
+    - cron: "30 4 * * *"   # daily at 04:30 UTC = 10:00 AM IST — adjust as needed
   workflow_dispatch: {}     # lets you also trigger it manually
 
 jobs:
