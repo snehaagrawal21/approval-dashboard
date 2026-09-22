@@ -1,0 +1,32 @@
+name: Sync Approval Matrix Dashboard
+
+on:
+  schedule:
+    - cron: "0 3 * * *"   # daily at 03:00 UTC — adjust as needed
+  workflow_dispatch: {}     # lets you also trigger it manually
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install requests pandas
+      - run: python sync_dashboard.py
+        env:
+          METABASE_URL: https://analytics.metalbook.app
+          METABASE_API_KEY: ${{ secrets.METABASE_API_KEY }}
+          METABASE_CARD_ID: ${{ secrets.METABASE_CARD_ID }}
+          DASHBOARD_HTML: Approval_Matrix_Dashboard.html
+      - name: Commit updated dashboard
+        run: |
+          git config user.name "dashboard-bot"
+          git config user.email "actions@github.com"
+          git add Approval_Matrix_Dashboard.html
+          git commit -m "Auto-sync dashboard data" || echo "No changes"
+          git push
+      # If you're hosting via GitHub Pages, that push is enough —
+      # Pages redeploys automatically. If hosting elsewhere (S3,
+      # Netlify, etc.) add a deploy step here instead of git push.
